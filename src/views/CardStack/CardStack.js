@@ -21,6 +21,9 @@ import SceneView from '../SceneView';
 import TransitionConfigs from './TransitionConfigs';
 import * as ReactNativeFeatures from '../../utils/ReactNativeFeatures';
 
+import store from '../../../../../src/store/store';
+import { TRANSITION_STARTED, TRANSITION_ENDED } from '../../../../../src/actions/types';
+
 const emptyFunction = () => {};
 
 const EaseInOut = Easing.inOut(Easing.ease);
@@ -191,6 +194,7 @@ class CardStack extends React.Component {
   }
 
   _reset(resetToIndex, duration) {
+    store.dispatch({ type: TRANSITION_ENDED });
     if (
       Platform.OS === 'ios' &&
       ReactNativeFeatures.supportsImprovedSpringAnimation()
@@ -287,6 +291,7 @@ class CardStack extends React.Component {
           onPanResponderGrant: () => {
             position.stopAnimation(value => {
               this._isResponding = true;
+              store.dispatch({ type: TRANSITION_STARTED });
               this._gestureStartValue = value;
             });
           },

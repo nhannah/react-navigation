@@ -194,7 +194,6 @@ class CardStack extends React.Component {
   }
 
   _reset(resetToIndex, duration) {
-    store.dispatch({ type: TRANSITION_ENDED });
     if (
       Platform.OS === 'ios' &&
       ReactNativeFeatures.supportsImprovedSpringAnimation()
@@ -286,6 +285,7 @@ class CardStack extends React.Component {
       : PanResponder.create({
           onPanResponderTerminate: () => {
             this._isResponding = false;
+            store.dispatch({ type: TRANSITION_ENDED });
             this._reset(index, 0);
           },
           onPanResponderGrant: () => {
@@ -294,6 +294,9 @@ class CardStack extends React.Component {
               store.dispatch({ type: TRANSITION_STARTED });
               this._gestureStartValue = value;
             });
+          },
+          onPanResponderReject: () => {
+            store.dispatch({ type: TRANSITION_ENDED });
           },
           onMoveShouldSetPanResponder: (event, gesture) => {
             if (index !== scene.index) {
@@ -355,6 +358,7 @@ class CardStack extends React.Component {
             // the navigation view is the responder (mid-gesture)
             false,
           onPanResponderRelease: (event, gesture) => {
+            store.dispatch({ type: TRANSITION_ENDED });
             if (!this._isResponding) {
               return;
             }
